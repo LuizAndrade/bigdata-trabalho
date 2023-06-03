@@ -1,8 +1,17 @@
 import uvicorn
 from fastapi import FastAPI
+from spark import start_spark, train_data
 
 # Inicializando aplicação
 app = FastAPI()
+
+
+# Endpoint para checar se aplicação está respondendo
+@app.get("/spark")
+def app_spark():
+    spark_context = start_spark()
+    train_data(spark_context)
+    return {"message": True}
 
 
 # Endpoint para checar se aplicação está respondendo
