@@ -21,11 +21,11 @@ def start_spark():
 
 
 def train_data(sqlContext):
-    # Update the .load path for the clean_tweet.csv
+    # Adicionar caminho do arquivo CSV dentro do .load
     df = (sqlContext.read
           .format('com.databricks.spark.csv')
           .options(header='true', inferschema='true')
-          .load('/home/luiz/workspace/study/python/bigdata-trabalho/backend/trainingandtestdata/clean_tweet.csv'))
+          .load(''))
     (train_set, val_set, test_set) = df.randomSplit([0.98, 0.01, 0.01], seed=2000)
 
     # Treinamento
