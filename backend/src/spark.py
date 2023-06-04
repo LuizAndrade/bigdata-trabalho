@@ -45,4 +45,7 @@ def train_data(sqlContext):
     lrModel = lr.fit(train_df)
     predictions = lrModel.transform(val_df)
     evaluator = BinaryClassificationEvaluator(rawPredictionCol="rawPrediction")
-    evaluator.evaluate(predictions)
+    print(evaluator.evaluate(predictions))
+
+    accuracy = predictions.filter(predictions.label == predictions.prediction).count() / float(val_set.count())
+    print(accuracy)
