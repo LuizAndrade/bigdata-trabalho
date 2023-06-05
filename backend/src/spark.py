@@ -1,5 +1,6 @@
 import pyspark as ps
 import warnings
+import pandas as pd
 from pyspark.sql import SparkSession
 
 # Treinamento
@@ -37,15 +38,33 @@ def train_data(sqlContext):
 
     pipelineFit = pipeline.fit(train_set)
     train_df = pipelineFit.transform(train_set)
-    val_df = pipelineFit.transform(val_set)
-    train_df.show(5)
+    # val_df = pipelineFit.transform(val_set)
+    test_df = pipelineFit.transform(test_set)
+    # train_df.show(5)
 
-    # Teste
+    # Validação
     lr = LogisticRegression(maxIter=100)
     lrModel = lr.fit(train_df)
-    predictions = lrModel.transform(val_df)
-    evaluator = BinaryClassificationEvaluator(rawPredictionCol="rawPrediction")
-    print(evaluator.evaluate(predictions))
+    # predictions = lrModel.transform(val_df)
+    # evaluator = BinaryClassificationEvaluator(rawPredictionCol="rawPrediction")
+    # print(f"Validação: {evaluator.evaluate(predictions)}")
 
-    accuracy = predictions.filter(predictions.label == predictions.prediction).count() / float(val_set.count())
-    print(accuracy)
+    # accuracy = predictions.filter(predictions.label == predictions.prediction).count() / float(val_set.count())
+    # print(f"Eficácia: {accuracy}")
+
+    # Teste
+    test_predictions = lrModel.transform(test_df)
+    evaluator = BinaryClassificationEvaluator(rawPredictionCol="rawPrediction")
+    print(f"Validação Teste: {evaluator.evaluate(test_predictions)}")
+
+    test_accuracy = test_predictions.filter(test_predictions.label == test_predictions.prediction).count() / float(test_set.count())
+    print(f"Eficácia Teste: {test_accuracy}")
+
+    pd_df = pd.read_csv("/home/luiz/workspace/study/python/bigdata-trabalho/trainingandtestdata/new_clean_tweets.csv")
+    count_neg = len(pd_df.loc[pd_df["target"] == 0])
+    count_pos = len(pd_df) - count_neg
+    return {
+        "count_pos": count_pos,
+        "count_neg": count_neg,
+        "accuracy": test_accuracy
+    }

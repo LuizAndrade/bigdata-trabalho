@@ -10,8 +10,7 @@ app = FastAPI()
 @app.get("/spark")
 def app_spark():
     spark_context = start_spark()
-    train_data(spark_context)
-    return {"message": True}
+    return train_data(spark_context)
 
 
 # Endpoint para checar se aplicação está respondendo
