@@ -32,25 +32,17 @@ def train_data(sqlContext):
     # Treinamento
     tokenizer = Tokenizer(inputCol="text", outputCol="words")
     hashtf = HashingTF(numFeatures=2**16, inputCol="words", outputCol='tf')
-    idf = IDF(inputCol='tf', outputCol="features", minDocFreq=5)  # minDocFreq: remove sparse terms
+    idf = IDF(inputCol='tf', outputCol="features", minDocFreq=5)
     label_stringIdx = StringIndexer(inputCol="target", outputCol="label")
     pipeline = Pipeline(stages=[tokenizer, hashtf, idf, label_stringIdx])
 
     pipelineFit = pipeline.fit(train_set)
     train_df = pipelineFit.transform(train_set)
-    # val_df = pipelineFit.transform(val_set)
     test_df = pipelineFit.transform(test_set)
-    # train_df.show(5)
 
     # Validação
     lr = LogisticRegression(maxIter=100)
     lrModel = lr.fit(train_df)
-    # predictions = lrModel.transform(val_df)
-    # evaluator = BinaryClassificationEvaluator(rawPredictionCol="rawPrediction")
-    # print(f"Validação: {evaluator.evaluate(predictions)}")
-
-    # accuracy = predictions.filter(predictions.label == predictions.prediction).count() / float(val_set.count())
-    # print(f"Eficácia: {accuracy}")
 
     # Teste
     test_predictions = lrModel.transform(test_df)
